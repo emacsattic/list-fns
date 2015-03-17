@@ -1,26 +1,10 @@
 ;;; list-fns.el --- list-searching and manipulation functions
 
-;; Copyright (C) 1991, 92, 93, 94, 95, 96, 97, 98, 99, 00, 01, 04, 05, 2006 Noah S. Friedman
-
 ;; Author: Noah Friedman <friedman@splode.com>
-;; Maintainer: friedman@splode.com
+;; Created: 1991
+;; Public domain.
 
-;; $Id: list-fns.el,v 1.24 2006/10/25 08:59:49 friedman Exp $
-
-;; This program is free software; you can redistribute it and/or modify
-;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation; either version 2, or (at your option)
-;; any later version.
-;;
-;; This program is distributed in the hope that it will be useful,
-;; but WITHOUT ANY WARRANTY; without even the implied warranty of
-;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-;; GNU General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with this program; if not, you can either send email to this
-;; program's maintainer or write to: The Free Software Foundation,
-;; Inc.; 51 Franklin Street, Fifth Floor; Boston, MA 02110-1301, USA.
+;; $Id: list-fns.el,v 1.25 2015/02/06 23:33:42 friedman Exp $
 
 ;;; Commentary:
 
@@ -32,7 +16,6 @@
 
 ;;; Functions for operating on generic lists
 
-;;;###autoload
 (defun add-list-members (list &rest new)
   "Insert items in LIST if they are not already members of that list.
 Comparison is done with EQUAL, not EQ.
@@ -43,6 +26,7 @@ LIST may be a list or a symbol whose value is a list.
   If it is void, it will be initialized.
 
 The resulting list is returned."
+  (declare (indent 1))
   (let ((l (cond ((not (symbolp list))
                   list)
                  ((boundp list)
@@ -55,9 +39,6 @@ The resulting list is returned."
         (set list l))
     l))
 
-(put 'add-list-members 'lisp-indent-function 1)
-
-;;;###autoload
 (defun append-list-members (list &rest new)
   "Append items to end of LIST if they are not already members of that list.
 Comparison is done with EQUAL, not EQ.
@@ -68,6 +49,7 @@ LIST may be a list or a symbol whose value is a list.
   If it is void, it will be initialized.
 
 The resulting list is returned."
+  (declare (indent 1))
   (let ((l (cond ((not (symbolp list))
                    list)
                   ((boundp list)
@@ -90,9 +72,6 @@ The resulting list is returned."
         (set list l))
     l))
 
-(put 'append-list-members 'lisp-indent-function 1)
-
-;;;###autoload
 (defun delete-list-members (list &rest removals)
   "Remove items from list if they are members.
 Comparison is done with EQUAL, not EQ.
@@ -101,6 +80,7 @@ LIST may be a list or a symbol whose value is a list.
   If LIST is a symbol, it is modified by side effect.
 
 The new value of the list is returned."
+  (declare (indent 1))
   (let ((l (cond ((not (symbolp list))
                   list)
                  ((boundp list)
@@ -112,11 +92,8 @@ The new value of the list is returned."
         (set list l))
     l))
 
-(put 'delete-list-members 'lisp-indent-function 1)
-
 ;; This used to be called `copy-tree', but that is now a standard function
 ;; in subr.el
-;;;###autoload
 (defun deep-copy-tree (obj &optional allp)
   "Make a deep copy of an object.
 Traverse object recursively, copying elements to create a new copy of the
@@ -173,7 +150,6 @@ copies from the elements present in the original object."
 
    (t obj)))
 
-;;;###autoload
 (defun delete-by (elt list equality-predicate)
   "Delete by side effect any occurrences of ELT as a member of LIST.
 The modified LIST is returned.
@@ -197,11 +173,11 @@ to be sure of changing the value of `foo'."
       (cdr list)
     list))
 
-;;;###autoload
 (defun first-matching (predicate &rest sequence)
   "Return the first element of SEQUENCE matching PREDICATE.
 PREDICATE is a function of one mandatory argument.
 SEQUENCE may be a list, a vector, a bool-vector, or a string."
+  (declare (indent 1))
   (catch 'found
     (mapc (lambda (elt)
             (if (funcall predicate elt)
@@ -215,9 +191,6 @@ SEQUENCE may be a list, a vector, a bool-vector, or a string."
         sequence))
     nil))
 
-(put 'first-matching 'lisp-indent-function 1)
-
-;;;###autoload
 (defun flatten-lists (&rest list)
   "Return a new, flat list of composed all the remaining arguments and their sublists.
 Dotted pairs are handled as lists.
@@ -235,9 +208,6 @@ Dotted pairs are handled as lists.
         ((car list)
          (list (car list)))))
 
-(defalias 'flatten 'flatten-lists)
-
-;;;###autoload
 (defun make-general-car-cdr (symbol-name &optional safe compile)
   "Return a list-traversal function based on SYMBOL-NAME.
 The name must be of the form `c[ad]+r', e.g. `caddddr', `caadadar', etc."
@@ -263,7 +233,6 @@ The name must be of the form `c[ad]+r', e.g. `caddddr', `caadadar', etc."
         (byte-compile form)
       (list 'function form))))
 
-;;;###autoload
 (defun member-by (elt list equality-predicate)
   "Return non-nil if ELT is an element of LIST.
 The value is actually the tail of LIST whose car is ELT.
@@ -275,7 +244,6 @@ specified, this function behaves exactly like `memq'."
       (setq list (cdr list)))
     list)
 
-;;;###autoload
 (defun delete-dups-by (list &optional equality-predicate)
   "Delete by side effect repeating occurences of any elt in LIST.
 For each elt in LIST, any subsequent occurence of the same elt is deleted
@@ -298,14 +266,12 @@ any variables bound to the list."
       (setq l (cdr l))))
   list)
 
-;;;###autoload
 (defun reverse-sequence (seq)
   "Like `reverse', but operate on additional sequence types.
 This should work for lists, vectors, bool-vectors, strings, and other
 vector-like data structures."
   (nreverse-sequence (copy-sequence seq)))
 
-;;;###autoload
 (defun nreverse-sequence (seq)
   "Like `nreverse', but operate on additional sequence types.
 This should work for lists, vectors, bool-vectors, strings, and other
@@ -326,7 +292,6 @@ vector-like data structures."
 
 ;;; sequence length comparison operators
 
-;;;###autoload
 (defun length<=> (s1 s2)
   "Return -1, 0, or 1 depending on length of sequences S1 and S2.
 
@@ -377,7 +342,6 @@ sequence is compared against the integer value of the other argument."
 
 ;;; Functions for operating on circular lists
 
-;;;###autoload
 (defun circular-list-p (l)
   "Determine whether list L contains a cycle."
   (let ((k l)
@@ -398,7 +362,6 @@ sequence is compared against the integer value of the other argument."
 ;; Thanks to Sean Suchter <ssuchter@inktomi.com> for helping me find an
 ;; earlier solution which had involved destructively modifying the list.
 ;; Both that solution and this one require O(N) time and O(1) space.
-;;;###autoload
 (defun circular-list-size (list)
   "Return the number of nodes in circular list LIST.
 That is, return the distance between the start of the list and the node
@@ -443,7 +406,6 @@ If LIST is not actually circular, just return the length of the list."
 
 ;;; Functions for operating on property lists
 
-;;;###autoload
 (defun merge-into-property-list (primary &rest plists)
   "Alter property list PRIMARY by merging in remaining property lists.
 PRIMARY property list is modified; remaining property lists are not changed.
@@ -474,7 +436,6 @@ later property list is merged into the primary property list."
 
 ;;; Functions for operating on association lists
 
-;;;###autoload
 (defun delassoc-by (elt alist equality-predicate)
   "Delete by side effect any occurrences of ELT as a member of ALIST.
 The modified ALIST is returned.
@@ -506,7 +467,6 @@ Note the difference in semantics:
   (set-nested-alist-slot alist-or-sym (cons key nil) value
                          ignore-if-new assq-or-assoc append))
 
-;;;###autoload
 (defun set-nested-alist-slot (alist-or-sym key-list value
                               &optional ignore-if-new assq-or-assoc
                                         append)
@@ -587,7 +547,6 @@ Examples:
 
 ;;; Control or iteration constructs
 
-;;;###autoload
 (defmacro nf:do (variable-init-step test-exprs &rest commands)
   "Usage: (do ((variable init step) ...) (test expressions ...) command ...)
 
@@ -609,6 +568,7 @@ then the value of `test' is returned.
 
 If both a step and init are omitted, then the result is the same as if
 \(variable nil nil\) had been written instead of \(variable\)."
+  (declare (indent 2) (debug t))
   `(let ,(mapcar (lambda (arg)
                    (list (car arg) (car (cdr arg))))
                  variable-init-step)
@@ -621,15 +581,13 @@ If both a step and init are omitted, then the result is the same as if
                  variable-init-step))
      ,@(cdr test-exprs)))
 
-(put 'do 'lisp-indent-function 2)
-
-;;;###autoload
 (defun for-each (fn &rest lists)
   "Like mapcar, but don't cons a list of return values.
 This function also handles multiple list arguments.
 The first arg, a function, is expected to take as many arguments as there
 are subsequent list arguments to for-each, and each argument list is
 assumed to be the same length."
+  (declare (indent 1))
   (cond ((consp (cdr lists))
          (let ((listrun (make-list (length lists) nil))
                listsl listrunl)
@@ -649,10 +607,6 @@ assumed to be the same length."
            (funcall fn (car lists))
            (setq lists (cdr lists))))))
 
-;; indent like `while'
-(put 'for-each 'lisp-indent-function 1)
-
-;;;###autoload
 (defun run-hook-with-arguments (hooksym &rest args)
   "Take hook name HOOKSYM and run it, passing optional args ARGS.
 HOOKSYM should be a symbol, a hook variable.
@@ -685,7 +639,6 @@ If it is a list, the elements are called, in order, with ARGS."
 ;; It turns out that this is also a good way of delaying evaluation of
 ;; initialization commands until after the command loop is entered, which
 ;; is sometimes necessary for tweaking frame parameters.
-;;;###autoload
 (defun push-command (form)
   "Execute FORM as an interactive command next time the command loop runs.
 This works by setting `unread-command-events' (which see).
@@ -710,7 +663,6 @@ interactive command loop is entered."
 	(setq unread-command-events (nconc unread-command-events (list key)))
       (global-set-key event key))))
 
-;;;###autoload
 (defun replace-auto-mode (regexp function)
   "Change the default major mode associated with a kind of file.
 Modify first occurence of (REGEXP . old-function) pair in `auto-mode-alist'
@@ -737,7 +689,6 @@ modified."
            (t
             (signal 'error (cdr err)))))))
 
-;;;###autoload
 (defun set-buffer-list-order (olist)
   "Modify buffer list order to match OLIST.
 
@@ -768,7 +719,6 @@ buffer list only."
       (bury-buffer (car olist))
       (setq olist (cdr olist)))))
 
-;;;###autoload
 (defun set-load-path (&rest path-lists)
   "Construct load path from any number of string-lists or strings.
 
@@ -788,7 +738,6 @@ load-path is lost."
            (setq load-path-new (cons dir load-path-new))))
     (setq load-path (nreverse load-path-new))))
 
-;;;###autoload
 (defun set-minor-mode-string (minor-mode string &optional globalp)
   "Set MINOR-MODE display string according to STRING.
 STRING need not actually be a string; see `mode-line-format'.
@@ -809,8 +758,7 @@ If optional arg GLOBALP is non-nil, then always set the global value of
 
 ;;; Misc type predicates
 
-;;;###autoload
-(defun autoloadp (fn)
+(defun lf-autoloadp (fn)
   "Return t if FN is autoloaded."
   (and (symbolp fn)
        (fboundp fn)
@@ -818,8 +766,10 @@ If optional arg GLOBALP is non-nil, then always set the global value of
   (and (listp fn)
        (eq (car fn) 'autoload)))
 
-;;;###autoload
-(defun functionp (x)
+(or (fboundp  'autoloadp)
+    (defalias 'autoloadp 'lf-autoloadp))
+
+(defun lf-functionp (x)
   "Return `t' if X is a function, nil otherwise.
 X may be a subr, a byte-compiled function, a lambda expression, or a symbol
 with a function definition.
@@ -832,8 +782,10 @@ is actually well-formed (i.e. syntactically valid as a function)."
    ((and (symbolp x) (fboundp x)))
    (t nil)))
 
-;;;###autoload
-(defun macrop (x)
+(or (fboundp  'functionp)
+    (defalias 'functionp 'lf-functionp))
+
+(defun lf-macrop (x)
   "Return `t' if X is a macro, nil otherwise.
 X may be a raw or byte-compiled macro.  No attempt is made to determine if
 the macro is actually well-formed (i.e. syntactically valid)."
@@ -841,6 +793,9 @@ the macro is actually well-formed (i.e. syntactically valid)."
          nil)
         ((eq (car x) 'macro)
          (functionp (cdr x)))))
+
+(or (fboundp  'functionp)
+    (defalias 'functionp 'lf-functionp))
 
 (provide 'list-fns)
 
