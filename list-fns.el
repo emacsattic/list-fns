@@ -4,7 +4,7 @@
 ;; Created: 1991
 ;; Public domain.
 
-;; $Id: list-fns.el,v 1.25 2015/02/06 23:33:42 friedman Exp $
+;; $Id: list-fns.el,v 1.26 2017/01/05 23:14:03 friedman Exp $
 
 ;;; Commentary:
 
@@ -406,6 +406,15 @@ If LIST is not actually circular, just return the length of the list."
 
 ;;; Functions for operating on property lists
 
+;; This is a macro so that we don't shadow variables in caller.
+(defmacro map-plist (fn plist)
+  (declare (debug t))
+  (let ((plsym (make-symbol "plist")))
+    `(let ((,plsym ,plist))
+       (while ,plsym
+         (funcall ,fn (car ,plsym) (cadr ,plsym))
+         (setq ,plsym (cddr ,plsym))))))
+
 (defun merge-into-property-list (primary &rest plists)
   "Alter property list PRIMARY by merging in remaining property lists.
 PRIMARY property list is modified; remaining property lists are not changed.
@@ -418,6 +427,7 @@ symbol is used.
 
 If two property lists specify the same property, the value from the
 later property list is merged into the primary property list."
+  (declare (indent 1))
   (and (symbolp primary)
        (setq primary (symbol-plist primary)))
   (let (plist)
@@ -430,8 +440,6 @@ later property list is merged into the primary property list."
         (setq primary (plist-put primary (nth 0 plist) (nth 1 plist)))
         (setq plist (cdr (cdr plist))))))
   primary)
-
-(put 'merge-into-property-list 'lisp-indent-function 1)
 
 
 ;;; Functions for operating on association lists
